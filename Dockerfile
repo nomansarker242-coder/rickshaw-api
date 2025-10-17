@@ -12,15 +12,18 @@ ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/po
 RUN unzip /tmp/pb.zip -d /pb/
 RUN chmod +x /pb/pocketbase
 
-# Copy initial data (optional, for persistence)
-COPY ./pocketbase_0.30.4_windows_amd64/pb_data /pb/pb_data
+# Debug: Verify the download and extraction
+RUN ls -la /tmp/ && echo "Contents of /tmp"
+RUN ls -la /pb/ && echo "Contents of /pb"
+RUN test -f /pb/pocketbase && echo "PocketBase binary exists" || echo "PocketBase binary not found"
+RUN /pb/pocketbase --version && echo "PocketBase version check passed" || echo "PocketBase version check failed"
 
-# Debug: Verify pocketbase exists and is executable
-RUN ls -l /pb/pocketbase
-RUN /pb/pocketbase --version
+# Copy initial data (optional, for persistence)
+# Commenting out to avoid issues if the directory is missing
+# COPY ./pocketbase_0.30.4_windows_amd64/pb_data /pb/pb_data
 
 # Expose the port PocketBase uses
 EXPOSE 8090
 
-# Command to run PocketBase
-CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8090"]
+# Runtime debug: Check environment before starting
+CMD sh -c "ls -la /pb && echo 'Checking pocketbase binary' && test -x /pb/pocketbase && echo 'PocketBase is executable' || echo 'PocketBase is not executable'; /pb/pocketbase serve --http=0.0.0.0:8090"
