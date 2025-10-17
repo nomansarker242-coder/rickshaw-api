@@ -12,13 +12,15 @@ ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/po
 RUN unzip /tmp/pb.zip -d /pb/
 RUN chmod +x /pb/pocketbase
 
-
 # Copy initial data (optional, for persistence)
 COPY ./pocketbase_0.30.4_windows_amd64/pb_data /pb/pb_data
+
+# Debug: Verify pocketbase exists and is executable
+RUN ls -l /pb/pocketbase
+RUN /pb/pocketbase --version
 
 # Expose the port PocketBase uses
 EXPOSE 8090
 
 # Command to run PocketBase
 CMD ["/pb/pocketbase", "serve", "--http=0.0.0.0:8090"]
-
